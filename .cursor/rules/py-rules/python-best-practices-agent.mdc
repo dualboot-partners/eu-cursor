@@ -1,0 +1,178 @@
+---
+description: This rule governs Python development best practices across the entire project. It should be applied whenever: (1) Creating new Python files or modules, (2) Modifying existing Python code, (3) Reviewing or fixing Python-related bugs, (4) Making architectural decisions that involve Python, (5) Planning new Python features or components. The rule ensures code quality, maintainability, and adherence to Python community standards.
+globs:
+alwaysApply: false
+---
+
+# Python Development Best Practices
+
+## Critical Rules
+
+- Always follow PEP 8 style guidelines for code formatting
+- Use type hints for all function parameters and return values
+- Organize imports in three blocks separated by a blank line: standard library, third-party packages, local applications/modules
+- Use meaningful variable, function and class names that clearly express intent
+- Write docstrings for all modules, classes, methods, and functions using the Google or NumPy style
+- Handle exceptions appropriately with specific exception types rather than bare except clauses
+- Use virtual environments for dependency management
+- Specify package versions in requirements.txt or setup.py files
+- Use context managers (with statements) for resource management
+- Write unit tests for all functionality using pytest or unittest
+- Follow the Zen of Python principles (import this)
+- Prefer list/dict comprehensions over map/filter where appropriate
+- Use dataclasses or named tuples for data containers rather than plain tuples
+- Avoid global variables and maintain function purity when possible
+- Implement proper logging instead of print statements for debugging
+- Use f-strings for string formatting (Python 3.6+)
+- Consider using static type checking with mypy for large codebases
+- Follow SOLID principles for OOP design
+- Use pathlib instead of os.path for file operations (Python 3.4+)
+- Implement proper error messages that are informative and actionable
+
+## Examples
+
+<example>
+# Good Python code example
+import os
+import sys
+from typing import List, Dict, Optional, Tuple
+
+import pandas as pd
+import numpy as np
+
+from myapp.models import User
+from myapp.utils.helpers import format_date
+
+
+class DataProcessor:
+    """Process and transform input data.
+
+    This class handles data cleaning, transformation, and preparation
+    for further analysis.
+    """
+
+    def __init__(self, input_path: str, config: Dict[str, any]):
+        """Initialize the data processor.
+
+        Args:
+            input_path: Path to the input data file
+            config: Configuration dictionary with processing parameters
+        """
+        self.input_path = input_path
+        self.config = config
+        self.logger = self._setup_logger()
+
+    def _setup_logger(self):
+        """Set up a logger for this class."""
+        # Logger implementation...
+        pass
+
+    def process_data(self, filter_date: Optional[str] = None) -> pd.DataFrame:
+        """Process the input data according to configuration.
+
+        Args:
+            filter_date: Optional date string to filter data
+
+        Returns:
+            Processed DataFrame
+
+        Raises:
+            FileNotFoundError: If the input file doesn't exist
+            ValueError: If the data format is invalid
+        """
+        try:
+            df = pd.read_csv(self.input_path)
+
+            # Data processing steps
+            if filter_date:
+                df = df[df['date'] == format_date(filter_date)]
+
+            return df
+        except FileNotFoundError:
+            self.logger.error(f"Input file not found: {self.input_path}")
+            raise
+        except Exception as e:
+            self.logger.error(f"Error processing data: {str(e)}")
+            raise ValueError(f"Invalid data format: {str(e)}")
+
+
+def calculate_metrics(data: pd.DataFrame) -> Dict[str, float]:
+    """Calculate metrics from the processed data.
+
+    Args:
+        data: Input DataFrame with processed data
+
+    Returns:
+        Dictionary with calculated metrics
+    """
+    return {
+        "mean": data["value"].mean(),
+        "median": data["value"].median(),
+        "std": data["value"].std()
+    }
+
+
+if __name__ == "__main__":
+    with open("config.json", "r") as f:
+        config = json.load(f)
+
+    processor = DataProcessor("data.csv", config)
+    processed_data = processor.process_data()
+    metrics = calculate_metrics(processed_data)
+
+    print(f"Calculated metrics: {metrics}")
+</example>
+
+<example type="invalid">
+# Bad Python code example
+import pandas, numpy, os, sys, random, json, datetime
+
+# global variables
+data = None
+CONST = 123
+
+def process():
+    global data
+    try:
+        data = pandas.read_csv('data.csv')
+        # No type hints
+        def helper(x):
+            return x*2
+
+        # Using bare except
+        try:
+            result = data.apply(helper)
+        except:
+            print("Some error occurred")
+            pass
+
+        # Poor string formatting
+        print("The shape is " + str(data.shape[0]) + " rows")
+
+        # No docstrings or parameter descriptions
+        return result
+    except:
+        print("Error")
+
+
+class processor:
+    # Inconsistent naming (not PEP 8)
+    def DoSomething(self, inputval):
+        # Poor exception handling and no return type
+        if inputval > 0:
+            return inputval * 2
+        else:
+            return "Error"  # Inconsistent return types
+
+    # No docstrings
+    def analyze(self):
+        vals = []
+        # Could use list comprehension instead
+        for i in range(10):
+            vals.append(i * i)
+        return vals
+
+# No if __name__ == "__main__" guard
+process()
+print("Done")
+</example>
