@@ -1,6 +1,6 @@
 ---
 description: This rule governs the architecture and organization of frontend components using Feature-Slice Design methodology. It should be applied whenever: (1) Creating new frontend components, (2) Refactoring existing components, (3) Planning feature implementation, (4) Discussing component architecture, or (5) Reviewing frontend code structure. The rule ensures consistent component organization, proper separation of concerns, and maintainable code structure. It's particularly important when determining where to place new components, how to organize types and models, and how to structure the relationships between different parts of the frontend application. This rule helps maintain a scalable and maintainable frontend architecture by providing clear guidelines on component placement, naming conventions, and responsibility boundaries.
-globs:
+globs: 
 alwaysApply: false
 ---
 # Feature slice desogn
@@ -10,11 +10,11 @@ alwaysApply: false
 ### Layer Organization
 ```
 app/frontend/
-├── app/          # Application initialization and global providers
+├── app/          # Application initialization, global styles and global providers
 ├── entities/     # Business entities (User, Project, etc.)
-├── features/     # Business features (Auth, ProjectManagement, etc.)
+├── features/     # Reused implementations of entire product features, i.e. actions that bring business value to the user.
 ├── widgets/      # Composite components combining entities and features
-├── pages/        # Route components
+├── pages/        # full pages or large parts of a page in nested routing
 └── shared/       # Shared code (API, UI kit, utilities)
 ```
 
@@ -22,10 +22,10 @@ app/frontend/
 Each layer should organize code into segments:
 ```
 layer/
-├── model/       # Domain logic, types, and constants
-├── ui/          # UI components
-├── api/         # API integration
-├── lib/         # Utilities and helpers
+├── model/       # the data model: schemas, interfaces, stores, and business logic.
+├── ui/          # everything related to UI display
+├── api/         # backend interactions: request functions, data types, mappers, etc.
+├── lib/         # library code that other modules on this slice need.
 └── types/       # Type definitions (if not in model)
 ```
 
@@ -42,7 +42,7 @@ Components with multiple files use model segment for types:
 ```
 features/auth/
 ├── model/
-│   └── types.ts    # All feature types including component props
+│   └── types.ts    # All feature types
 └── ui/
     └── LoginForm.tsx
 ```
@@ -53,7 +53,7 @@ features/auth/
 Define in `model/types.ts` and export through layer's public API:
 ```typescript
 // entities/project/model/types.ts
-export interface Project {
+export interface IProject {
   id: number;
   name: string;
   status: ProjectStatus;
@@ -61,10 +61,10 @@ export interface Project {
 ```
 
 ### Component Props
-Define in model/types.ts with other related types:
+Define inside Component file:
 ```typescript
-// features/auth/model/types.ts
-export interface LoginFormProps {
+// features/auth/ui/LoginForm.tsx
+interface ILoginFormProps {
   onSuccess?: () => void;
 }
 ```
@@ -75,9 +75,9 @@ export interface LoginFormProps {
 Each layer must have index.ts that exports only what's needed by other layers:
 ```typescript
 // entities/project/index.ts
-export type { Project } from './model/types';
+export type { IProject } from './model/types';
 export { ProjectCard } from './ui/ProjectCard';
-export { useProject } from './api/queries';
+export { useProject } from './api/project';
 ```
 
 ## Import Rules
@@ -131,9 +131,21 @@ import { Project } from 'entities/project/model/types';
 ```typescript
 import { dependencies } from 'external';
 import { internal } from './internal';
-import type { Props } from '../model/types';
 
-export const Component = ({ prop1, prop2 }: Props) => {
+interface IProps {
+  prop1: string;
+  prop2: number;
+}
+
+// MaterialUI sx props styles
+const styles = {
+  …
+} satisfies SxProps;
+
+export const Component = (props: IProps) => {
+  // destructuring props
+  const { prop1, prop2 } = props;
+
   // hooks first
   const state = useState();
 
