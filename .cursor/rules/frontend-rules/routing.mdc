@@ -1,0 +1,8 @@
+---
+description: This rule governs routing usage
+globs: 
+alwaysApply: false
+---
+# Routing
+- use tanstack router
+- do not use strings as paths and links, use routes object from shared/router
