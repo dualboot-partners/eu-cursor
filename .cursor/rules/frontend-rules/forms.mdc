@@ -1,0 +1,11 @@
+---
+description: This rule governs forms usage
+globs: 
+alwaysApply: false
+---
+# Forms
+- always use react-hook-form package
+- always use FormProvider
+- always use zod resolver
+- always store zod scheme in lib segment's folder
+- take all the control components from materialUI theme, do not apply custom styles

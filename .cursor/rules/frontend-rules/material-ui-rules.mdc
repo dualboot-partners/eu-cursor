@@ -15,7 +15,16 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 ```
 
+## Typography
+- Do not use fontFamily key in sxProps objects
+- Typography variants should be used instead of direct font styling
+- Match typography variants from Figma with the existed file content /shared/theme/baseTheme/typography.ts
+
+## Modals
+- always use @ebay/nice-modal-react approach
+
 ## SxProps usage
+- Use full written css-in-js keys (paddingTop instead of pt, etc.) instead of abbreviated
 
 ### Avoid inline sxProps usage
 ```typescript
